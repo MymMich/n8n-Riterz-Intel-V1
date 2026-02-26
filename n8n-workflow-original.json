@@ -1,0 +1,347 @@
+{
+  "name": "News Daily - team@riterz.com V2",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 4 * * 1,3"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [0, -1610],
+      "id": "f80d20bb-0f0f-467b-8b30-7e99ac6f43f5",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the Senior Commercial Intelligence Analyst for Riterz.com.\n\nPurpose\nProduce a twice-weekly commercial briefing that educates the internal team, supports investor narrative, sharpens sales conversations, and stress-tests Riterz's thesis.\n\nRiterz context\nRiterz is building the AI-led operating system for sports. We turn rights-holder inventory into buyable, high-performing digital campaigns. The briefing must evaluate: inventory liquidity, performance-based sponsorship adoption, AI-driven targeting and measurement, modularity of deals, and speed of activation/onboarding.\n\nTool usage (mandatory)\n1) Use \"perplexity\" to research relevant sponsorship/partnership and digital activation signals from the last 3–7 days.\n - Prioritise EU and APAC, include US/UAE if strategically relevant.\n - Focus: deal structure shifts, digital overlays/virtual ads, modular or secondary packages, measurable ROI cases, brand budget signals, measurement tech, regulatory impacts, retail media crossover.\n - Exclude: generic non-commercial sports news, pure trade policy, opinion with no commercial implication.\n - Gather 3–5 meaningful signals and at least 3 credible sources.\n\n2) Use the \"email\" tool to send the final report.\n\nOutput requirements (important)\n- Output must be valid HTML suitable for an email newsletter.\n- Use inline styling only (no external CSS, no <style> blocks).\n- Do not include any meta-instructions in the body.\n- No emojis in body text except section header icons.\n- Keep it readable in 4–6 minutes: concise, no repetition, no filler.\n- UK English.\n\nFormatting style guide (use exactly)\n- Container: max width 720px, centred, font-family Arial, line-height 1.55.\n- Use a clear title, then a small date line.\n- Use section blocks with subtle borders and spacing.\n- TL;DR label must be bold.\n- Section headers may include a single emoji icon at the start.\n\nEmail subject\n🦄 Riterz Commercial Intelligence | {{ $('Schedule Trigger').item.json['Readable date'] }}\n\nHTML structure to generate (follow this order)\n\n1) Header\n2) TL;DR box\n3) Opening Market Signal\n4) Deal & Inventory Signals\n5) ROI & Measurement Reality\n6) Brand Budget & Demand Signals\n7) Where the Sponsorship Model Is Still Stuck\n8) Tactical Leverage\n\nSend the final HTML via the email tool.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [0, 512],
+      "id": "696859b4-217d-40e3-ab1c-26f571d51c09",
+      "name": "AI Agent",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [0, 448, 1224],
+      "id": "6fc41964-1066-447f-9861-2e171857ad6d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Nsm1QvRfCrx2Gqy4",
+          "name": "Riterz API - Marty"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('message0_Text', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {
+          "searchRecency": "week"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexityTool",
+      "typeVersion": 1,
+      "position": [0, 576, 1224],
+      "id": "26fca308-99c2-445f-991c-cb9e5923e7fa",
+      "name": "perplexity",
+      "credentials": {
+        "perplexityApi": {
+          "id": "RooLpk1ky4oMUEJk",
+          "name": "Perplexity account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "outputFieldName": "={{ $json['Readable date'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [0, 224],
+      "id": "da0c136b-a259-4b0a-9241-ed54bef8014d",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "toRecipients": "team@riterz.com, j.steffen@hohle-gasse.ch",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "bodyContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "additionalFields": {
+          "bodyContentType": "html"
+        }
+      },
+      "type": "n8n-nodes-base.microsoftOutlookTool",
+      "typeVersion": 2,
+      "position": [0, 784, 1208],
+      "id": "80c1f93b-37c7-4cff-91e5-c55ac2881757",
+      "name": "Send a message in Microsoft Outlook",
+      "webhookId": "0efee48c-0de7-48f8-870a-a4993811285d",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "VVwMxnyXsCskqzhB",
+          "name": "myriam.michel@riterz.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 4 * * 1,3"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [0, 481, 592],
+      "id": "895e1310-7135-4ba1-9017-0f2b9cc577a3",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the Senior Commercial Intelligence Analyst for Riterz.com.\n\nPurpose\nProduce a twice-weekly commercial briefing that educates the internal team, supports investor narrative, sharpens sales conversations, and stress-tests Riterz's thesis.\n\nRiterz context\nRiterz is building the AI-led operating system for sports. We turn rights-holder inventory into buyable, high-performing digital campaigns. The briefing must evaluate: inventory liquidity, performance-based sponsorship adoption, AI-driven targeting and measurement, modularity of deals, and speed of activation/onboarding.\n\nTool usage (mandatory)\n1) Use \"perplexity\" to research relevant sponsorship/partnership and digital activation signals from the last 3–7 days.\n - Prioritise EU and APAC, include US/UAE if strategically relevant.\n - Focus: deal structure shifts, digital overlays/virtual ads, modular or secondary packages, measurable ROI cases, brand budget signals, measurement tech, regulatory impacts, retail media crossover.\n - Exclude: generic non-commercial sports news, pure trade policy, opinion with no commercial implication.\n - Gather 3–5 meaningful signals and at least 3 credible sources.\n\n2) Use the \"email\" tool to send the final report.\n\nOutput requirements (important)\n- Output must be valid HTML suitable for an email newsletter.\n- Use inline styling only (no external CSS, no <style> blocks).\n- Do not include any meta-instructions in the body.\n- No emojis in body text except section header icons.\n- Keep it readable in 4–6 minutes: concise, no repetition, no filler.\n- UK English.\n\nFormatting style guide (use exactly)\n- Container: max width 720px, centred, font-family Arial, line-height 1.55.\n- Use a clear title, then a small date line.\n- Use section blocks with subtle borders and spacing.\n- TL;DR label must be bold.\n- Section headers may include a single emoji icon at the start.\n\nEmail subject\n🦄 Riterz Commercial Intelligence | {{ $('Schedule Trigger1').item.json['Readable date'] }}\n\nHTML structure to generate (follow this order)\n\n1) Header\n2) TL;DR box\n3) Opening Market Signal\n4) Deal & Inventory Signals\n5) ROI & Measurement Reality\n6) Brand Budget & Demand Signals\n7) Where the Sponsorship Model Is Still Stuck\n8) Tactical Leverage\n\nSend the final HTML via the email tool.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [0, 576, 1592],
+      "id": "addfa8e7-69c9-43d8-abfd-f2fde6844752",
+      "name": "AI Agent1",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [0, 192, 1848],
+      "id": "81db5c66-4b01-4ef6-bd1b-4becc1d084fc",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Nsm1QvRfCrx2Gqy4",
+          "name": "Riterz API - Marty"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('message0_Text', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {
+          "searchRecency": "week"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexityTool",
+      "typeVersion": 1,
+      "position": [0, 640, 1816],
+      "id": "549ac1e5-1daf-40d1-92d8-133740da02b9",
+      "name": "perplexity1",
+      "credentials": {
+        "perplexityApi": {
+          "id": "RooLpk1ky4oMUEJk",
+          "name": "Perplexity account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "outputFieldName": "={{ $json['Readable date'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [0, 288, 1592],
+      "id": "e0831f03-00af-49a9-a4c2-14718ac252d9",
+      "name": "Date & Time1"
+    },
+    {
+      "parameters": {
+        "toRecipients": "myriam.michel@riterz.com",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "bodyContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "additionalFields": {
+          "bodyContentType": "html"
+        }
+      },
+      "type": "n8n-nodes-base.microsoftOutlookTool",
+      "typeVersion": 2,
+      "position": [0, 848, 1800],
+      "id": "ed799832-add0-4832-be28-b8091c576354",
+      "name": "Send a message in Microsoft Outlook1",
+      "webhookId": "0efee48c-0de7-48f8-870a-a4993811285d",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "VVwMxnyXsCskqzhB",
+          "name": "myriam.michel@riterz.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## OPEN AI",
+        "height": 528,
+        "width": 1088
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [0, -96, -96],
+      "typeVersion": 1,
+      "id": "55a403ef-337c-4d17-a7e9-261323548549",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## CLAUDE",
+        "height": 528,
+        "width": 1088
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [0, -928, -80],
+      "typeVersion": 1,
+      "id": "d24db0ed-24e3-4bb6-bf41-e4e52258173d",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {
+          "thinking": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [0, 448, 1800],
+      "id": "8fa29698-38b8-4469-87d8-49879fa0f071",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "tCl7NsyPUgEOBT3V",
+          "name": "Anthropic account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [{ "node": "Date & Time", "type": "main", "index": 0 }]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [{ "node": "AI Agent", "type": "ai_languageModel", "index": 0 }]
+      ]
+    },
+    "perplexity": {
+      "ai_tool": [
+        [{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [{ "node": "AI Agent", "type": "main", "index": 0 }]
+      ]
+    },
+    "Send a message in Microsoft Outlook": {
+      "ai_tool": [
+        [{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [{ "node": "Date & Time1", "type": "main", "index": 0 }]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": []
+    },
+    "perplexity1": {
+      "ai_tool": [
+        [{ "node": "AI Agent1", "type": "ai_tool", "index": 0 }]
+      ]
+    },
+    "Date & Time1": {
+      "main": [
+        [{ "node": "AI Agent1", "type": "main", "index": 0 }]
+      ]
+    },
+    "Send a message in Microsoft Outlook1": {
+      "ai_tool": [
+        [{ "node": "AI Agent1", "type": "ai_tool", "index": 0 }]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [{ "node": "AI Agent1", "type": "ai_languageModel", "index": 0 }]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/Paris",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "availableInMCP": false,
+  "versionId": "6d993494-91d7-4247-89e6-64fb84d05856",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f19ab3e121a7f582d99e3f889df7e0d7f58b1ebeadf62f127748e39b904959f3"
+  },
+  "id": "t1yg0QN2y0OKGnXK",
+  "tags": []
+}
