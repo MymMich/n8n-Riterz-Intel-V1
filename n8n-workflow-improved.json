@@ -1,5 +1,5 @@
 {
-  "name": "News Daily - team@riterz.com V2",
+  "name": "Riterz Commercial Intelligence V3",
   "nodes": [
     {
       "parameters": {
@@ -14,7 +14,7 @@
       },
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.3,
-      "position": [160, 300],
+      "position": [0, 300],
       "id": "895e1310-7135-4ba1-9017-0f2b9cc577a3",
       "name": "Schedule Trigger"
     },
@@ -25,19 +25,65 @@
       },
       "type": "n8n-nodes-base.dateTime",
       "typeVersion": 2,
-      "position": [420, 300],
+      "position": [220, 300],
       "id": "e0831f03-00af-49a9-a4c2-14718ac252d9",
       "name": "Date & Time"
     },
     {
       "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "YOUR_NOTION_DATABASE_ID_HERE",
+          "mode": "id"
+        },
+        "returnAll": false,
+        "limit": 3,
+        "options": {
+          "sort": {
+            "sortValue": [
+              {
+                "key": "created_time",
+                "direction": "descending",
+                "type": "created_time"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [440, 300],
+      "id": "a1b2c3d4-1111-4444-aaaa-000000000001",
+      "name": "Get Previous Newsletters",
+      "credentials": {
+        "notionApi": {
+          "id": "YOUR_NOTION_CREDENTIAL_ID",
+          "name": "Notion account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build dedup context from previous newsletters stored in Notion\nconst items = $input.all();\nlet dedupContext = '';\nlet lastNewsletterDate = '';\n\nif (items.length > 0 && items[0].json.properties) {\n  for (const item of items) {\n    const props = item.json.properties || {};\n    const date = props['Date']?.date?.start || props['Created']?.created_time?.split('T')[0] || 'Unknown';\n    if (!lastNewsletterDate) lastNewsletterDate = date;\n    const name = props['Name']?.title?.[0]?.plain_text || '';\n    const tldr = props['TL;DR']?.rich_text?.[0]?.plain_text || '';\n    const signals = props['Key Signals']?.rich_text?.[0]?.plain_text || '';\n    dedupContext += `\\n--- ${name} (${date}) ---\\nTL;DR: ${tldr}\\nSignals covered: ${signals}\\n`;\n  }\n} else {\n  dedupContext = 'No previous newsletters found. This is the first issue.';\n}\n\nconst readableDate = $('Date & Time').first().json['Readable date'] || new Date().toLocaleDateString('en-GB');\n\nreturn [{\n  json: {\n    previousContext: dedupContext,\n    lastNewsletterDate: lastNewsletterDate,\n    readableDate: readableDate\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [660, 300],
+      "id": "a1b2c3d4-2222-4444-aaaa-000000000002",
+      "name": "Build Dedup Context"
+    },
+    {
+      "parameters": {
         "promptType": "define",
-        "text": "=You are the Senior Commercial Intelligence Analyst at Riterz.com. You combine deep sports-business pattern recognition with honest, thesis-challenging analysis. You never pad content with filler or repeat points across sections. You write in UK English with the directness of a principal analyst briefing a board, not a content marketer writing a blog.\n\n<company_context>\nRiterz is building the AI-led operating system for sports. We turn rights-holder inventory into buyable, high-performing digital campaigns. Five pillars define the Riterz thesis:\n1. Inventory liquidity — breaking bundled sponsorship into modular, short-lead, tradeable units\n2. Performance-based sponsorship — shifting from fixed-fee to measurable, outcome-linked deals\n3. AI-driven targeting and measurement — real-time optimisation replacing post-campaign reports\n4. Modularity of deals — brands buying specific inventory slices, not monolithic packages\n5. Speed of activation/onboarding — days not months from brief to live campaign\n</company_context>\n\n<research_instructions>\nUse the \"perplexity\" tool to research commercial sponsorship and digital activation signals from the last 3–7 days.\n\nMake at least 2–3 separate, focused searches rather than one broad query:\n- Search 1: Recent sports sponsorship deals, digital overlay/virtual ad partnerships, modular or secondary inventory packages (prioritise EU and APAC)\n- Search 2: Sponsorship ROI measurement technology, attribution platforms, live optimisation case studies\n- Search 3: Brand budget shifts toward sports digital, retail media crossover into sports, regulatory impacts on sports sponsorship\n\nFor each search, set the focus on commercial mechanics — not general sports news. Exclude: pure trade policy, opinion pieces with no commercial data, generic match results or transfer news.\n\nYou need at least 3–5 meaningful signals backed by 3+ credible, linkable sources before proceeding to write.\n</research_instructions>\n\n<output_rules>\n- Output must be valid HTML suitable for an email newsletter\n- Use inline styling only (no external CSS, no <style> blocks)\n- Do not include any meta-instructions, process notes, or methodology references in the output (no \"max 6 bullets\", \"perplexity used\", \"quality control\", \"sources gathered\", etc.)\n- No emojis anywhere in body text — only single emoji icons at the start of section headers\n- Target reading time: 4–6 minutes. Be concise. Never repeat a point across sections\n- UK English throughout\n</output_rules>\n\n<html_style>\n- Container: max-width 720px, centred, font-family Arial/Helvetica/sans-serif, line-height 1.55, color #1a1a1a\n- Section blocks: subtle left border (3px solid #e0e0e0), padding-left 16px, margin-bottom 28px\n- TL;DR box: light background (#f8f9fa), padding 16px, border-radius 6px\n- Section headers: font-size 18px, font-weight 600, margin-bottom 8px\n- Source links: font-size 13px, color #666\n- All styling must be inline on each element\n</html_style>\n\n<email_subject>\n🦄 Riterz Commercial Intelligence | {{ $('Date & Time').item.json['Readable date'] }}\n</email_subject>\n\n<sections>\nGenerate the following sections in this exact order:\n\n1. HEADER\n   - Title: \"🦄 Riterz Commercial Intelligence\" — left-aligned, no centring\n   - Date line below: smaller font, left-aligned, show date only (no time)\n\n2. TL;DR\n   - Bold \"TL;DR\" label\n   - 4–6 bullet points, each exactly one sentence\n   - Every bullet must reference a specific named entity from the body: a brand, league, platform, deal value, or percentage — no abstract summaries\n\n3. OPENING MARKET SIGNAL\n   - 3–4 sentences only\n   - Answer: What is structurally changing in sports sponsorship this period? Where is pressure building? Is the market moving toward liquid/modular/measurable — or is it still stuck? Does this period validate or stress-test the Riterz thesis?\n\n4. DEAL & INVENTORY SIGNALS\n   - Up to 3 signals. For each:\n     - Headline (bold)\n     - The Numbers: fee, duration, lift %, inventory value — if publicly available\n     - Commercial Mechanics: how is inventory structured? Static/digital/modular/performance-linked/secondary package?\n     - Comparative Insight (mandatory for at least one signal): explicitly compare to how this deal would have been structured 3 years ago under legacy sponsorship. What changed in granularity, liquidity, or measurement?\n     - Liquidity Impact: does this fractionalise inventory, unlock short-lead buying, or remain bundled/locked?\n     - Riterz Stress Test: does this signal strengthen or weaken the marketplace + performance + AI thesis? Be honest — if it weakens it, say so clearly\n     - Source: clickable URL\n\n5. ROI & MEASUREMENT REALITY\n   - At least one item:\n     - Highlight (bold)\n     - Assessment: is ROI genuinely being proven with real attribution, or is it overstated/anecdotal?\n     - Gap: where is live optimisation, real-time attribution, or cross-channel measurement still missing?\n     - Source: clickable URL\n\n6. BRAND BUDGET & DEMAND SIGNALS\n   - 1–2 items:\n     - Signal (bold)\n     - Commercial Translation: what specific inventory will these brands actually demand, and why? Connect budget shifts to inventory types\n     - Source: clickable URL\n\n7. WHERE THE SPONSORSHIP MODEL IS STILL STUCK\n   - 6–8 sentences, blunt and honest\n   - Must address: bundling/long-term lock-in, post-campaign-only reporting, lack of audience segmentation, limited marketplace access for mid-tier brands, manual activation friction, measurement treated as add-on rather than native\n   - Also address honestly: where Riterz itself still lacks proof points or scale to capitalise on these gaps\n\n8. TACTICAL LEVERAGE\n   - Up to 5 bullet points\n   - Each must be a concrete, usable line for investor conversations or sales calls\n   - Format: situation/objection then what to say and why it works\n   - No generic statements like \"the market is shifting\" — give specific ammunition referencing data from this briefing\n</sections>\n\n<final_step>\nAfter generating the complete HTML, use the \"Send a message in Microsoft Outlook\" tool to send it with the subject line specified above and the HTML as the body content.\n</final_step>",
+        "text": "=You are the Senior Commercial Intelligence Analyst at Riterz.com. You combine deep sports-business pattern recognition with honest, thesis-challenging analysis. You never pad content with filler or repeat points across sections. You write in UK English with the directness of a principal analyst briefing a board, not a content marketer writing a blog.\n\n<company_context>\nRiterz is building the AI-led operating system for sports. We turn rights-holder inventory into buyable, high-performing digital campaigns. Five pillars define the Riterz thesis:\n1. Inventory liquidity — breaking bundled sponsorship into modular, short-lead, tradeable units\n2. Performance-based sponsorship — shifting from fixed-fee to measurable, outcome-linked deals\n3. AI-driven targeting and measurement — real-time optimisation replacing post-campaign reports\n4. Modularity of deals — brands buying specific inventory slices, not monolithic packages\n5. Speed of activation/onboarding — days not months from brief to live campaign\n</company_context>\n\n<previous_newsletters>\nBelow are summaries of the most recent newsletters you have already sent. You MUST NOT repeat the same signals, deals, or stories unless there is a material update or development since they were last covered. If you reference something from a previous issue, you MUST explicitly state what has changed.\n\n{{ $json.previousContext }}\n</previous_newsletters>\n\n<research_instructions>\nToday's date is {{ $json.readableDate }}. The last newsletter was sent on {{ $json.lastNewsletterDate || 'N/A — this is the first issue' }}.\n\nUse the \"perplexity\" tool to research commercial sponsorship and digital activation signals. CRITICAL: only search for news from AFTER the last newsletter date. Do not resurface old stories.\n\nMake at least 2–3 separate, focused searches:\n- Search 1: Recent sports sponsorship deals, digital overlay/virtual ad partnerships, modular or secondary inventory packages announced in the last 3–4 days (prioritise EU and APAC)\n- Search 2: Sponsorship ROI measurement technology, attribution platforms, live optimisation case studies from the last 3–4 days\n- Search 3: Brand budget shifts toward sports digital, retail media crossover into sports, regulatory impacts on sports sponsorship from the last 3–4 days\n\nRELEVANCE FILTER — every signal you include MUST pass at least 2 of these 5 tests:\n1. Does it involve inventory structure change (bundled → modular, static → digital, fixed → performance)?\n2. Does it demonstrate measurable ROI or new attribution methodology in sports sponsorship?\n3. Does it affect how brands buy sports inventory (marketplace dynamics, programmatic, short-lead)?\n4. Does it involve AI/ML applied to targeting, measurement, or activation in sports?\n5. Does it directly impact Riterz's competitive landscape, potential partners, or target customer segments?\n\nIf a signal fails both tests, do NOT include it regardless of how interesting it is.\n\nExclude: generic non-commercial sports news, pure trade policy, opinion with no commercial data, match results, transfer news, celebrity endorsements with no structural innovation.\n\nYou need at least 3–5 meaningful signals backed by 3+ credible, linkable sources before proceeding to write.\n</research_instructions>\n\n<output_rules>\n- Output ONLY the raw HTML. No preamble, no explanation, no commentary before or after the HTML.\n- The output must start with the opening HTML div tag and end with the closing div tag.\n- Use inline styling only (no external CSS, no <style> blocks)\n- Do not include any meta-instructions, process notes, or methodology references\n- No emojis anywhere in body text — only single emoji icons at the start of section headers\n- Target reading time: 4–6 minutes. Be concise. Never repeat a point across sections\n- UK English throughout\n</output_rules>\n\n<html_style>\n- Container: max-width 720px, centred, font-family Arial/Helvetica/sans-serif, line-height 1.55, color #1a1a1a\n- Section blocks: subtle left border (3px solid #e0e0e0), padding-left 16px, margin-bottom 28px\n- TL;DR box: light background (#f8f9fa), padding 16px, border-radius 6px\n- Section headers: font-size 18px, font-weight 600, margin-bottom 8px\n- Source links: font-size 13px, color #666\n- All styling must be inline on each element\n</html_style>\n\n<sections>\nGenerate the following sections in this exact order:\n\n1. HEADER\n   - Title: \"🦄 Riterz Commercial Intelligence\" — left-aligned, no centring\n   - Date line below: smaller font, left-aligned, show date only (no time)\n\n2. TL;DR\n   - Bold \"TL;DR\" label\n   - 4–6 bullet points, each exactly one sentence\n   - Every bullet must reference a specific named entity from the body: a brand, league, platform, deal value, or percentage — no abstract summaries\n\n3. OPENING MARKET SIGNAL\n   - 3–4 sentences only\n   - Answer: What is structurally changing in sports sponsorship this period? Where is pressure building? Is the market moving toward liquid/modular/measurable — or is it still stuck? Does this period validate or stress-test the Riterz thesis?\n\n4. DEAL & INVENTORY SIGNALS\n   - Up to 3 signals. For each:\n     - Headline (bold)\n     - The Numbers: fee, duration, lift %, inventory value — if publicly available\n     - Commercial Mechanics: how is inventory structured? Static/digital/modular/performance-linked/secondary package?\n     - Comparative Insight (mandatory for at least one signal): explicitly compare to how this deal would have been structured 3 years ago under legacy sponsorship. What changed in granularity, liquidity, or measurement?\n     - Liquidity Impact: does this fractionalise inventory, unlock short-lead buying, or remain bundled/locked?\n     - Riterz Stress Test: does this signal strengthen or weaken the marketplace + performance + AI thesis? Be honest — if it weakens it, say so clearly\n     - Source: clickable URL\n\n5. ROI & MEASUREMENT REALITY\n   - At least one item:\n     - Highlight (bold)\n     - Assessment: is ROI genuinely being proven with real attribution, or is it overstated/anecdotal?\n     - Gap: where is live optimisation, real-time attribution, or cross-channel measurement still missing?\n     - Source: clickable URL\n\n6. BRAND BUDGET & DEMAND SIGNALS\n   - 1–2 items:\n     - Signal (bold)\n     - Commercial Translation: what specific inventory will these brands actually demand, and why? Connect budget shifts to inventory types\n     - Source: clickable URL\n\n7. WHERE THE SPONSORSHIP MODEL IS STILL STUCK\n   - 6–8 sentences, blunt and honest\n   - Must address: bundling/long-term lock-in, post-campaign-only reporting, lack of audience segmentation, limited marketplace access for mid-tier brands, manual activation friction, measurement treated as add-on rather than native\n   - Also address honestly: where Riterz itself still lacks proof points or scale to capitalise on these gaps\n\n8. TACTICAL LEVERAGE\n   - Up to 5 bullet points\n   - Each must be a concrete, usable line for investor conversations or sales calls\n   - Format: situation/objection then what to say and why it works\n   - No generic statements like \"the market is shifting\" — give specific ammunition referencing data from this briefing\n</sections>\n\nRemember: output ONLY the HTML. Nothing else.",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3,
-      "position": [700, 300],
+      "position": [900, 300],
       "id": "addfa8e7-69c9-43d8-abfd-f2fde6844752",
       "name": "AI Agent",
       "executeOnce": true
@@ -50,16 +96,11 @@
           "value": "claude-sonnet-4-5-20250929",
           "cachedResultName": "Claude Sonnet 4.5"
         },
-        "options": {
-          "thinking": true,
-          "thinkingBudget": 8000,
-          "maxTokensToSample": 16000,
-          "maxTokens": 16000
-        }
+        "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
       "typeVersion": 1.3,
-      "position": [560, 520],
+      "position": [800, 520],
       "id": "8fa29698-38b8-4469-87d8-49879fa0f071",
       "name": "Anthropic Chat Model",
       "credentials": {
@@ -85,7 +126,7 @@
       },
       "type": "n8n-nodes-base.perplexityTool",
       "typeVersion": 1,
-      "position": [740, 520],
+      "position": [960, 520],
       "id": "549ac1e5-1daf-40d1-92d8-133740da02b9",
       "name": "perplexity",
       "credentials": {
@@ -97,19 +138,29 @@
     },
     {
       "parameters": {
+        "jsCode": "// Parse AI Agent output: extract subject, HTML, TL;DR, and key signals for Notion logging\nconst agentOutput = $input.first().json.output || $input.first().json.text || '';\nconst readableDate = $('Date & Time').first().json['Readable date'] || new Date().toLocaleDateString('en-GB');\n\n// Extract TL;DR for Notion logging\nlet tldrExcerpt = '';\nconst tldrMatch = agentOutput.match(/TL;DR[\\s\\S]*?<ul[^>]*>([\\s\\S]*?)<\\/ul>/i);\nif (tldrMatch) {\n  tldrExcerpt = tldrMatch[1]\n    .replace(/<[^>]*>/g, '')\n    .replace(/\\s+/g, ' ')\n    .trim()\n    .substring(0, 2000);\n}\n\n// Extract key signals (bold headlines from the body)\nlet keySignals = '';\nconst headlineMatches = agentOutput.match(/<strong>([^<]+)<\\/strong>/g);\nif (headlineMatches) {\n  keySignals = headlineMatches\n    .map(h => h.replace(/<\\/?strong>/g, ''))\n    .filter(h => h !== 'TL;DR' && h.length > 5 && h.length < 200)\n    .slice(0, 10)\n    .join(', ')\n    .substring(0, 2000);\n}\n\nconst subject = `\\u{1F984} Riterz Commercial Intelligence | ${readableDate}`;\n\nreturn [{\n  json: {\n    subject: subject,\n    htmlBody: agentOutput,\n    tldrExcerpt: tldrExcerpt,\n    keySignals: keySignals,\n    date: new Date().toISOString().split('T')[0]\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1140, 300],
+      "id": "a1b2c3d4-3333-4444-aaaa-000000000003",
+      "name": "Parse Output"
+    },
+    {
+      "parameters": {
+        "operation": "sendMail",
         "toRecipients": "team@riterz.com, j.steffen@hohle-gasse.ch",
-        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
-        "bodyContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "subject": "={{ $json.subject }}",
+        "bodyContent": "={{ $json.htmlBody }}",
         "additionalFields": {
           "bodyContentType": "html"
         }
       },
-      "type": "n8n-nodes-base.microsoftOutlookTool",
+      "type": "n8n-nodes-base.microsoftOutlook",
       "typeVersion": 2,
-      "position": [920, 520],
+      "position": [1380, 200],
       "id": "ed799832-add0-4832-be28-b8091c576354",
-      "name": "Send a message in Microsoft Outlook",
-      "webhookId": "0efee48c-0de7-48f8-870a-a4993811285d",
+      "name": "Send Email",
       "credentials": {
         "microsoftOutlookOAuth2Api": {
           "id": "VVwMxnyXsCskqzhB",
@@ -119,12 +170,67 @@
     },
     {
       "parameters": {
-        "content": "## CLAUDE (Sonnet 4.5) — Riterz Commercial Intelligence",
-        "height": 440,
-        "width": 1000
+        "resource": "databasePage",
+        "operation": "create",
+        "databaseId": {
+          "__rl": true,
+          "value": "YOUR_NOTION_DATABASE_ID_HERE",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Name|title",
+              "title": "={{ $json.subject }}"
+            },
+            {
+              "key": "Date|date",
+              "dateValue": "={{ $json.date }}"
+            },
+            {
+              "key": "TL;DR|rich_text",
+              "richTextValue": "={{ $json.tldrExcerpt }}"
+            },
+            {
+              "key": "Key Signals|rich_text",
+              "richTextValue": "={{ $json.keySignals }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [1380, 420],
+      "id": "a1b2c3d4-4444-4444-aaaa-000000000004",
+      "name": "Log to Notion",
+      "credentials": {
+        "notionApi": {
+          "id": "YOUR_NOTION_CREDENTIAL_ID",
+          "name": "Notion account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## ⚙️ SETUP REQUIRED\n\n**1. Create a Notion database** with these columns:\n- Name (title) — auto-filled with subject line\n- Date (date) — when newsletter was sent\n- TL;DR (text) — bullet point summary\n- Key Signals (text) — deals/signals covered\n\n**2. Connect Notion credentials** in n8n:\n- Settings → Credentials → Add Notion API\n- Share your Notion database with the integration\n\n**3. Update both Notion nodes:**\n- Click \"Get Previous Newsletters\" → select your database\n- Click \"Log to Notion\" → select the same database\n- Map the property names to match your columns",
+        "height": 460,
+        "width": 440
       },
       "type": "n8n-nodes-base.stickyNote",
-      "position": [80, 180],
+      "position": [-480, 120],
+      "typeVersion": 1,
+      "id": "a1b2c3d4-5555-4444-aaaa-000000000005",
+      "name": "Setup Instructions"
+    },
+    {
+      "parameters": {
+        "content": "## 🦄 Riterz Commercial Intelligence V3\n\n**Flow:** Trigger → Date → Notion (read previous) → Dedup Context → AI Agent → Parse → Email + Notion Log\n\n**What's new:**\n- Reads last 3 newsletters from Notion to avoid repeating content\n- Date-aware research (only signals since last issue)\n- Stricter Riterz relevance filter (must pass 2/5 tests)\n- Logs every newsletter to Notion for history",
+        "height": 240,
+        "width": 1460
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [-80, 20],
       "typeVersion": 1,
       "id": "d24db0ed-24e3-4bb6-bf41-e4e52258173d",
       "name": "Sticky Note"
@@ -137,6 +243,16 @@
       ]
     },
     "Date & Time": {
+      "main": [
+        [{ "node": "Get Previous Newsletters", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get Previous Newsletters": {
+      "main": [
+        [{ "node": "Build Dedup Context", "type": "main", "index": 0 }]
+      ]
+    },
+    "Build Dedup Context": {
       "main": [
         [{ "node": "AI Agent", "type": "main", "index": 0 }]
       ]
@@ -151,13 +267,21 @@
         [{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]
       ]
     },
-    "Send a message in Microsoft Outlook": {
-      "ai_tool": [
-        [{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]
+    "AI Agent": {
+      "main": [
+        [{ "node": "Parse Output", "type": "main", "index": 0 }]
+      ]
+    },
+    "Parse Output": {
+      "main": [
+        [
+          { "node": "Send Email", "type": "main", "index": 0 },
+          { "node": "Log to Notion", "type": "main", "index": 0 }
+        ]
       ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1",
     "timeSavedMode": "fixed",
