@@ -14,217 +14,33 @@
       },
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.3,
-      "position": [-1610, 0],
-      "id": "f80d20bb-0f0f-467b-8b30-7e99ac6f43f5",
+      "position": [160, 300],
+      "id": "895e1310-7135-4ba1-9017-0f2b9cc577a3",
       "name": "Schedule Trigger"
     },
     {
       "parameters": {
-        "promptType": "define",
-        "text": "=You are the Senior Commercial Intelligence Analyst for Riterz.com.\n\nPurpose\nProduce a twice-weekly commercial briefing that educates the internal team, supports investor narrative, sharpens sales conversations, and stress-tests Riterz's thesis.\n\nRiterz context\nRiterz is building the AI-led operating system for sports. We turn rights-holder inventory into buyable, high-performing digital campaigns. The briefing must evaluate: inventory liquidity, performance-based sponsorship adoption, AI-driven targeting and measurement, modularity of deals, and speed of activation/onboarding.\n\nTool usage (mandatory)\n1) Use \"perplexity\" to research relevant sponsorship/partnership and digital activation signals from the last 3–7 days.\n - Prioritise EU and APAC, include US/UAE if strategically relevant.\n - Focus: deal structure shifts, digital overlays/virtual ads, modular or secondary packages, measurable ROI cases, brand budget signals, measurement tech, regulatory impacts, retail media crossover.\n - Exclude: generic non-commercial sports news, pure trade policy, opinion with no commercial implication.\n - Gather 3–5 meaningful signals and at least 3 credible sources.\n\n2) Use the \"email\" tool to send the final report.\n\nOutput requirements (important)\n- Output must be valid HTML suitable for an email newsletter.\n- Use inline styling only (no external CSS, no <style> blocks).\n- Do not include any meta-instructions in the body (e.g., do not write \"max 6 bullets\", \"3–4 sentences\", \"quality control\", \"perplexity used\", \"email tool executed\", or similar).\n- No emojis in body text except section header icons.\n- Keep it readable in 4–6 minutes: concise, no repetition, no filler.\n- UK English.\n\nFormatting style guide (use exactly)\n- Container: max width 720px, centred, font-family Arial, line-height 1.55.\n- Use a clear title, then a small date line.\n- Use section blocks with subtle borders and spacing.\n- TL;DR label must be bold.\n- Section headers may include a single emoji icon at the start (for scannability).\n\nEmail subject\n🦄 Riterz Commercial Intelligence | {{ $('Schedule Trigger').item.json['Readable date'] }} \n\nHTML structure to generate (follow this order)\n\n1) Header\n- Title must be exactly: 🦄 Riterz Commercial Intelligence\n- Title must be left-aligned\n- No centring styles applied\n- Use a simple div block with margin-bottom spacing\n- Date line below title, smaller font, left-aligned. only show the date, do not show the time\n\n2) TL;DR box\n- Bold \"TL;DR\"\n- 4–6 bullets, each one sentence, high signal\n- Each bullet must reference real items from the body (named brands, leagues, deals, platforms, or specific numbers).\n\n3) Opening Market Signal\n- 3–4 sentences: what is structurally changing, where pressure is building, whether sponsorship is becoming more liquid/modular/measurable or still stuck, whether Riterz thesis is validated or stress-tested this period.\n\n4) Deal & Inventory Signals\n- Include up to 3 signals.\n- For each signal include:\n - Headline (bold)\n - The Numbers (if available: fee, duration, lift %, inventory value)\n - Commercial Mechanics (how inventory is structured: static/digital/modular/performance-linked/secondary package)\n - Comparative Insight (mandatory for at least one signal: explicitly compare to legacy sponsorship structure and explain what changes in granularity/liquidity/measurement)\n - Liquidity Impact (does it fractionalise, unlock short-lead inventory, or remain bundled/locked)\n - Riterz Stress Test (does it strengthen or weaken marketplace + performance + AI thesis, be honest)\n - Source link (\"Source:\" + URL)\n\n5) ROI & Measurement Reality\n- At least one item.\n- Include:\n - Highlight (bold)\n - Assessment (is ROI genuinely being proven or overstated)\n - Gap (where attribution/live optimisation is still missing)\n - Source link(s)\n\n6) Brand Budget & Demand Signals\n- 1–2 items.\n- Include:\n - Signal (bold)\n - Commercial Translation (what inventory these brands will actually demand, and why)\n - Source link(s)\n\n7) Where the Sponsorship Model Is Still Stuck\n- 6–8 sentences, direct and honest.\n- Address: bundling/long-term lock-in, post-campaign reporting, lack of segmentation, limited marketplace access, manual activation, measurement as add-on not native, where Riterz still lacks proof/scale.\n\n8) Tactical Leverage\n- Up to 5 bullets.\n- Must be concrete ammunition for investor and sales conversations (openers, objection handling, positioning angles).\n- No generic statements.\n\nSend the final HTML via the email tool.",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3,
-      "position": [512, 0],
-      "id": "696859b4-217d-40e3-ab1c-26f571d51c09",
-      "name": "AI Agent",
-      "executeOnce": true
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "gpt-4.1",
-          "mode": "list",
-          "cachedResultName": "gpt-4.1"
-        },
-        "builtInTools": {},
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.3,
-      "position": [448, 1224],
-      "id": "6fc41964-1066-447f-9861-2e171857ad6d",
-      "name": "OpenAI Chat Model",
-      "credentials": {
-        "openAiApi": {
-          "id": "Nsm1QvRfCrx2Gqy4",
-          "name": "Riterz API - Marty"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "messages": {
-          "message": [
-            {
-              "content": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('message0_Text', ``, 'string') }}"
-            }
-          ]
-        },
-        "options": {
-          "searchRecency": "week"
-        },
-        "requestOptions": {}
-      },
-      "type": "n8n-nodes-base.perplexityTool",
-      "typeVersion": 1,
-      "position": [576, 1224],
-      "id": "26fca308-99c2-445f-991c-cb9e5923e7fa",
-      "name": "perplexity",
-      "credentials": {
-        "perplexityApi": {
-          "id": "RooLpk1ky4oMUEJk",
-          "name": "Perplexity account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "outputFieldName": "Readable date",
         "options": {}
       },
       "type": "n8n-nodes-base.dateTime",
       "typeVersion": 2,
-      "position": [224, 0],
-      "id": "da0c136b-a259-4b0a-9241-ed54bef8014d",
+      "position": [420, 300],
+      "id": "e0831f03-00af-49a9-a4c2-14718ac252d9",
       "name": "Date & Time"
     },
     {
       "parameters": {
-        "toRecipients": "team@riterz.com, j.steffen@hohle-gasse.ch",
-        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
-        "bodyContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
-        "additionalFields": {
-          "bodyContentType": "html"
-        }
-      },
-      "type": "n8n-nodes-base.microsoftOutlookTool",
-      "typeVersion": 2,
-      "position": [784, 1208],
-      "id": "80c1f93b-37c7-4cff-91e5-c55ac2881757",
-      "name": "Send a message in Microsoft Outlook",
-      "webhookId": "0efee48c-0de7-48f8-870a-a4993811285d",
-      "credentials": {
-        "microsoftOutlookOAuth2Api": {
-          "id": "VVwMxnyXsCskqzhB",
-          "name": "myriam.michel@riterz.com"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "rule": {
-          "interval": [
-            {
-              "field": "cronExpression",
-              "expression": "0 4 * * 1,3"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.3,
-      "position": [481, 1592],
-      "id": "895e1310-7135-4ba1-9017-0f2b9cc577a3",
-      "name": "Schedule Trigger1"
-    },
-    {
-      "parameters": {
         "promptType": "define",
-        "text": "=You are the Senior Commercial Intelligence Analyst at Riterz.com. You combine deep sports-business pattern recognition with honest, thesis-challenging analysis. You never pad content with filler or repeat points across sections. You write in UK English with the directness of a principal analyst briefing a board, not a content marketer writing a blog.\n\n<company_context>\nRiterz is building the AI-led operating system for sports. We turn rights-holder inventory into buyable, high-performing digital campaigns. Five pillars define the Riterz thesis:\n1. Inventory liquidity — breaking bundled sponsorship into modular, short-lead, tradeable units\n2. Performance-based sponsorship — shifting from fixed-fee to measurable, outcome-linked deals\n3. AI-driven targeting and measurement — real-time optimisation replacing post-campaign reports\n4. Modularity of deals — brands buying specific inventory slices, not monolithic packages\n5. Speed of activation/onboarding — days not months from brief to live campaign\n</company_context>\n\n<research_instructions>\nUse the \"perplexity\" tool to research commercial sponsorship and digital activation signals from the last 3–7 days.\n\nMake at least 2–3 separate, focused searches rather than one broad query:\n- Search 1: Recent sports sponsorship deals, digital overlay/virtual ad partnerships, modular or secondary inventory packages (prioritise EU and APAC)\n- Search 2: Sponsorship ROI measurement technology, attribution platforms, live optimisation case studies\n- Search 3: Brand budget shifts toward sports digital, retail media crossover into sports, regulatory impacts on sports sponsorship\n\nFor each search, set the focus on commercial mechanics — not general sports news. Exclude: pure trade policy, opinion pieces with no commercial data, generic match results or transfer news.\n\nYou need at least 3–5 meaningful signals backed by 3+ credible, linkable sources before proceeding to write.\n</research_instructions>\n\n<output_rules>\n- Output must be valid HTML suitable for an email newsletter\n- Use inline styling only (no external CSS, no <style> blocks)\n- Do not include any meta-instructions, process notes, or methodology references in the output (no \"max 6 bullets\", \"perplexity used\", \"quality control\", \"sources gathered\", etc.)\n- No emojis anywhere in body text — only single emoji icons at the start of section headers\n- Target reading time: 4–6 minutes. Be concise. Never repeat a point across sections\n- UK English throughout\n</output_rules>\n\n<html_style>\n- Container: max-width 720px, centred, font-family Arial/Helvetica/sans-serif, line-height 1.55, color #1a1a1a\n- Section blocks: subtle left border (3px solid #e0e0e0), padding-left 16px, margin-bottom 28px\n- TL;DR box: light background (#f8f9fa), padding 16px, border-radius 6px\n- Section headers: font-size 18px, font-weight 600, margin-bottom 8px\n- Source links: font-size 13px, color #666\n- All styling must be inline on each element\n</html_style>\n\n<email_subject>\n🦄 Riterz Commercial Intelligence | {{ $('Schedule Trigger1').item.json['Readable date'] }}\n</email_subject>\n\n<sections>\nGenerate the following sections in this exact order:\n\n1. HEADER\n   - Title: \"🦄 Riterz Commercial Intelligence\" — left-aligned, no centring\n   - Date line below: smaller font, left-aligned, show date only (no time)\n\n2. TL;DR\n   - Bold \"TL;DR\" label\n   - 4–6 bullet points, each exactly one sentence\n   - Every bullet must reference a specific named entity from the body: a brand, league, platform, deal value, or percentage — no abstract summaries\n\n3. OPENING MARKET SIGNAL\n   - 3–4 sentences only\n   - Answer: What is structurally changing in sports sponsorship this period? Where is pressure building? Is the market moving toward liquid/modular/measurable — or is it still stuck? Does this period validate or stress-test the Riterz thesis?\n\n4. DEAL & INVENTORY SIGNALS\n   - Up to 3 signals. For each:\n     - Headline (bold)\n     - The Numbers: fee, duration, lift %, inventory value — if publicly available\n     - Commercial Mechanics: how is inventory structured? Static/digital/modular/performance-linked/secondary package?\n     - Comparative Insight (mandatory for at least one signal): explicitly compare to how this deal would have been structured 3 years ago under legacy sponsorship. What changed in granularity, liquidity, or measurement?\n     - Liquidity Impact: does this fractionalise inventory, unlock short-lead buying, or remain bundled/locked?\n     - Riterz Stress Test: does this signal strengthen or weaken the marketplace + performance + AI thesis? Be honest — if it weakens it, say so clearly\n     - Source: clickable URL\n\n5. ROI & MEASUREMENT REALITY\n   - At least one item:\n     - Highlight (bold)\n     - Assessment: is ROI genuinely being proven with real attribution, or is it overstated/anecdotal?\n     - Gap: where is live optimisation, real-time attribution, or cross-channel measurement still missing?\n     - Source: clickable URL\n\n6. BRAND BUDGET & DEMAND SIGNALS\n   - 1–2 items:\n     - Signal (bold)\n     - Commercial Translation: what specific inventory will these brands actually demand, and why? Connect budget shifts to inventory types\n     - Source: clickable URL\n\n7. WHERE THE SPONSORSHIP MODEL IS STILL STUCK\n   - 6–8 sentences, blunt and honest\n   - Must address: bundling/long-term lock-in, post-campaign-only reporting, lack of audience segmentation, limited marketplace access for mid-tier brands, manual activation friction, measurement treated as add-on rather than native\n   - Also address honestly: where Riterz itself still lacks proof points or scale to capitalise on these gaps\n\n8. TACTICAL LEVERAGE\n   - Up to 5 bullet points\n   - Each must be a concrete, usable line for investor conversations or sales calls\n   - Format: situation/objection then what to say and why it works\n   - No generic statements like \"the market is shifting\" — give specific ammunition referencing data from this briefing\n</sections>\n\n<final_step>\nAfter generating the complete HTML, use the \"Send a message in Microsoft Outlook1\" tool to send it with the subject line specified above and the HTML as the body content.\n</final_step>",
+        "text": "=You are the Senior Commercial Intelligence Analyst at Riterz.com. You combine deep sports-business pattern recognition with honest, thesis-challenging analysis. You never pad content with filler or repeat points across sections. You write in UK English with the directness of a principal analyst briefing a board, not a content marketer writing a blog.\n\n<company_context>\nRiterz is building the AI-led operating system for sports. We turn rights-holder inventory into buyable, high-performing digital campaigns. Five pillars define the Riterz thesis:\n1. Inventory liquidity — breaking bundled sponsorship into modular, short-lead, tradeable units\n2. Performance-based sponsorship — shifting from fixed-fee to measurable, outcome-linked deals\n3. AI-driven targeting and measurement — real-time optimisation replacing post-campaign reports\n4. Modularity of deals — brands buying specific inventory slices, not monolithic packages\n5. Speed of activation/onboarding — days not months from brief to live campaign\n</company_context>\n\n<research_instructions>\nUse the \"perplexity\" tool to research commercial sponsorship and digital activation signals from the last 3–7 days.\n\nMake at least 2–3 separate, focused searches rather than one broad query:\n- Search 1: Recent sports sponsorship deals, digital overlay/virtual ad partnerships, modular or secondary inventory packages (prioritise EU and APAC)\n- Search 2: Sponsorship ROI measurement technology, attribution platforms, live optimisation case studies\n- Search 3: Brand budget shifts toward sports digital, retail media crossover into sports, regulatory impacts on sports sponsorship\n\nFor each search, set the focus on commercial mechanics — not general sports news. Exclude: pure trade policy, opinion pieces with no commercial data, generic match results or transfer news.\n\nYou need at least 3–5 meaningful signals backed by 3+ credible, linkable sources before proceeding to write.\n</research_instructions>\n\n<output_rules>\n- Output must be valid HTML suitable for an email newsletter\n- Use inline styling only (no external CSS, no <style> blocks)\n- Do not include any meta-instructions, process notes, or methodology references in the output (no \"max 6 bullets\", \"perplexity used\", \"quality control\", \"sources gathered\", etc.)\n- No emojis anywhere in body text — only single emoji icons at the start of section headers\n- Target reading time: 4–6 minutes. Be concise. Never repeat a point across sections\n- UK English throughout\n</output_rules>\n\n<html_style>\n- Container: max-width 720px, centred, font-family Arial/Helvetica/sans-serif, line-height 1.55, color #1a1a1a\n- Section blocks: subtle left border (3px solid #e0e0e0), padding-left 16px, margin-bottom 28px\n- TL;DR box: light background (#f8f9fa), padding 16px, border-radius 6px\n- Section headers: font-size 18px, font-weight 600, margin-bottom 8px\n- Source links: font-size 13px, color #666\n- All styling must be inline on each element\n</html_style>\n\n<email_subject>\n🦄 Riterz Commercial Intelligence | {{ $('Date & Time').item.json['Readable date'] }}\n</email_subject>\n\n<sections>\nGenerate the following sections in this exact order:\n\n1. HEADER\n   - Title: \"🦄 Riterz Commercial Intelligence\" — left-aligned, no centring\n   - Date line below: smaller font, left-aligned, show date only (no time)\n\n2. TL;DR\n   - Bold \"TL;DR\" label\n   - 4–6 bullet points, each exactly one sentence\n   - Every bullet must reference a specific named entity from the body: a brand, league, platform, deal value, or percentage — no abstract summaries\n\n3. OPENING MARKET SIGNAL\n   - 3–4 sentences only\n   - Answer: What is structurally changing in sports sponsorship this period? Where is pressure building? Is the market moving toward liquid/modular/measurable — or is it still stuck? Does this period validate or stress-test the Riterz thesis?\n\n4. DEAL & INVENTORY SIGNALS\n   - Up to 3 signals. For each:\n     - Headline (bold)\n     - The Numbers: fee, duration, lift %, inventory value — if publicly available\n     - Commercial Mechanics: how is inventory structured? Static/digital/modular/performance-linked/secondary package?\n     - Comparative Insight (mandatory for at least one signal): explicitly compare to how this deal would have been structured 3 years ago under legacy sponsorship. What changed in granularity, liquidity, or measurement?\n     - Liquidity Impact: does this fractionalise inventory, unlock short-lead buying, or remain bundled/locked?\n     - Riterz Stress Test: does this signal strengthen or weaken the marketplace + performance + AI thesis? Be honest — if it weakens it, say so clearly\n     - Source: clickable URL\n\n5. ROI & MEASUREMENT REALITY\n   - At least one item:\n     - Highlight (bold)\n     - Assessment: is ROI genuinely being proven with real attribution, or is it overstated/anecdotal?\n     - Gap: where is live optimisation, real-time attribution, or cross-channel measurement still missing?\n     - Source: clickable URL\n\n6. BRAND BUDGET & DEMAND SIGNALS\n   - 1–2 items:\n     - Signal (bold)\n     - Commercial Translation: what specific inventory will these brands actually demand, and why? Connect budget shifts to inventory types\n     - Source: clickable URL\n\n7. WHERE THE SPONSORSHIP MODEL IS STILL STUCK\n   - 6–8 sentences, blunt and honest\n   - Must address: bundling/long-term lock-in, post-campaign-only reporting, lack of audience segmentation, limited marketplace access for mid-tier brands, manual activation friction, measurement treated as add-on rather than native\n   - Also address honestly: where Riterz itself still lacks proof points or scale to capitalise on these gaps\n\n8. TACTICAL LEVERAGE\n   - Up to 5 bullet points\n   - Each must be a concrete, usable line for investor conversations or sales calls\n   - Format: situation/objection then what to say and why it works\n   - No generic statements like \"the market is shifting\" — give specific ammunition referencing data from this briefing\n</sections>\n\n<final_step>\nAfter generating the complete HTML, use the \"Send a message in Microsoft Outlook\" tool to send it with the subject line specified above and the HTML as the body content.\n</final_step>",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3,
-      "position": [576, 1592],
+      "position": [700, 300],
       "id": "addfa8e7-69c9-43d8-abfd-f2fde6844752",
-      "name": "AI Agent1",
+      "name": "AI Agent",
       "executeOnce": true
-    },
-    {
-      "parameters": {
-        "messages": {
-          "message": [
-            {
-              "content": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('message0_Text', ``, 'string') }}"
-            }
-          ]
-        },
-        "options": {
-          "searchRecency": "week"
-        },
-        "requestOptions": {}
-      },
-      "type": "n8n-nodes-base.perplexityTool",
-      "typeVersion": 1,
-      "position": [640, 1816],
-      "id": "549ac1e5-1daf-40d1-92d8-133740da02b9",
-      "name": "perplexity1",
-      "credentials": {
-        "perplexityApi": {
-          "id": "RooLpk1ky4oMUEJk",
-          "name": "Perplexity account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "outputFieldName": "Readable date",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.dateTime",
-      "typeVersion": 2,
-      "position": [288, 1592],
-      "id": "e0831f03-00af-49a9-a4c2-14718ac252d9",
-      "name": "Date & Time1"
-    },
-    {
-      "parameters": {
-        "toRecipients": "team@riterz.com, j.steffen@hohle-gasse.ch",
-        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
-        "bodyContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
-        "additionalFields": {
-          "bodyContentType": "html"
-        }
-      },
-      "type": "n8n-nodes-base.microsoftOutlookTool",
-      "typeVersion": 2,
-      "position": [848, 1800],
-      "id": "ed799832-add0-4832-be28-b8091c576354",
-      "name": "Send a message in Microsoft Outlook1",
-      "webhookId": "0efee48c-0de7-48f8-870a-a4993811285d",
-      "credentials": {
-        "microsoftOutlookOAuth2Api": {
-          "id": "VVwMxnyXsCskqzhB",
-          "name": "myriam.michel@riterz.com"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "content": "## OPEN AI",
-        "height": 528,
-        "width": 1088
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "position": [-96, -96],
-      "typeVersion": 1,
-      "id": "55a403ef-337c-4d17-a7e9-261323548549",
-      "name": "Sticky Note"
-    },
-    {
-      "parameters": {
-        "content": "## CLAUDE (Sonnet 4.6)",
-        "height": 528,
-        "width": 1088
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "position": [-928, -80],
-      "typeVersion": 1,
-      "id": "d24db0ed-24e3-4bb6-bf41-e4e52258173d",
-      "name": "Sticky Note1"
     },
     {
       "parameters": {
@@ -241,7 +57,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
       "typeVersion": 1.3,
-      "position": [448, 1800],
+      "position": [560, 520],
       "id": "8fa29698-38b8-4469-87d8-49879fa0f071",
       "name": "Anthropic Chat Model",
       "credentials": {
@@ -250,6 +66,66 @@
           "name": "Anthropic account"
         }
       }
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('message0_Text', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {
+          "searchRecency": "week"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexityTool",
+      "typeVersion": 1,
+      "position": [740, 520],
+      "id": "549ac1e5-1daf-40d1-92d8-133740da02b9",
+      "name": "perplexity",
+      "credentials": {
+        "perplexityApi": {
+          "id": "RooLpk1ky4oMUEJk",
+          "name": "Perplexity account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toRecipients": "team@riterz.com, j.steffen@hohle-gasse.ch",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "bodyContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "additionalFields": {
+          "bodyContentType": "html"
+        }
+      },
+      "type": "n8n-nodes-base.microsoftOutlookTool",
+      "typeVersion": 2,
+      "position": [920, 520],
+      "id": "ed799832-add0-4832-be28-b8091c576354",
+      "name": "Send a message in Microsoft Outlook",
+      "webhookId": "0efee48c-0de7-48f8-870a-a4993811285d",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "VVwMxnyXsCskqzhB",
+          "name": "myriam.michel@riterz.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## CLAUDE (Sonnet 4.5) — Riterz Commercial Intelligence",
+        "height": 440,
+        "width": 1000
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [80, 180],
+      "typeVersion": 1,
+      "id": "d24db0ed-24e3-4bb6-bf41-e4e52258173d",
+      "name": "Sticky Note"
     }
   ],
   "connections": {
@@ -258,7 +134,12 @@
         [{ "node": "Date & Time", "type": "main", "index": 0 }]
       ]
     },
-    "OpenAI Chat Model": {
+    "Date & Time": {
+      "main": [
+        [{ "node": "AI Agent", "type": "main", "index": 0 }]
+      ]
+    },
+    "Anthropic Chat Model": {
       "ai_languageModel": [
         [{ "node": "AI Agent", "type": "ai_languageModel", "index": 0 }]
       ]
@@ -268,39 +149,9 @@
         [{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]
       ]
     },
-    "Date & Time": {
-      "main": [
-        [{ "node": "AI Agent", "type": "main", "index": 0 }]
-      ]
-    },
     "Send a message in Microsoft Outlook": {
       "ai_tool": [
         [{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]
-      ]
-    },
-    "Schedule Trigger1": {
-      "main": [
-        [{ "node": "Date & Time1", "type": "main", "index": 0 }]
-      ]
-    },
-    "perplexity1": {
-      "ai_tool": [
-        [{ "node": "AI Agent1", "type": "ai_tool", "index": 0 }]
-      ]
-    },
-    "Date & Time1": {
-      "main": [
-        [{ "node": "AI Agent1", "type": "main", "index": 0 }]
-      ]
-    },
-    "Send a message in Microsoft Outlook1": {
-      "ai_tool": [
-        [{ "node": "AI Agent1", "type": "ai_tool", "index": 0 }]
-      ]
-    },
-    "Anthropic Chat Model": {
-      "ai_languageModel": [
-        [{ "node": "AI Agent1", "type": "ai_languageModel", "index": 0 }]
       ]
     }
   },
